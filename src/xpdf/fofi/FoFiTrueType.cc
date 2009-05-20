@@ -1490,6 +1490,9 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
 
   // construct the 'head' table, zero out the font checksum
   i = seekTable("head");
+  if (i < 0 || i >= nTables) {
+    return;
+  }
   pos = tables[i].offset;
   if (!checkRegion(pos, 54)) {
     return;
