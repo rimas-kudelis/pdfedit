@@ -789,10 +789,12 @@ void FoFiType1C::convertToType0(const char *psName,
     //~ to handle multiple FDs correctly, need to somehow divide the
     //~ font up by FD; as a kludge we ignore CID 0, which is .notdef
     fd = 0;
-    for (j = i==0 ? 1 : 0; j < 256 && i+j < nCIDs; ++j) {
-      if (cidMap[i+j] >= 0) {
-	fd = fdSelect[cidMap[i+j]];
-	break;
+    if (fdSelect != NULL) {
+      for (j = i==0 ? 1 : 0; j < 256 && i+j < nCIDs; ++j) {
+        if (cidMap[i+j] >= 0) {
+          fd = fdSelect[cidMap[i+j]];
+          break;
+        }
       }
     }
 
