@@ -1255,7 +1255,7 @@ void FoFiType1C::cvtGlyph(int offset, int nBytes, GString *charBuf,
 	  --nOps;
 	  ok = gTrue;
 	  getIndexVal(subrIdx, k, &val, &ok);
-	  if (ok) {
+	  if (ok && val.pos != offset) {
 	    cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, gFalse);
 	  }
 	} else {
@@ -1490,7 +1490,7 @@ void FoFiType1C::cvtGlyph(int offset, int nBytes, GString *charBuf,
 	  --nOps;
 	  ok = gTrue;
 	  getIndexVal(&gsubrIdx, k, &val, &ok);
-	  if (ok) {
+	  if (ok && val.pos != offset) {
 	    cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, gFalse);
 	  }
 	} else {
