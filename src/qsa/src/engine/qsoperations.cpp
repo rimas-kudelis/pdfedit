@@ -83,7 +83,7 @@ bool QS::isInf( double d )
 #  if defined( Q_CC_BOR ) // Crashes with out this test...
 	!isNaN( d ) &&
 #  endif
-	_finite( d ) == 0 && d == d;
+	__finite( d ) == 0 && d == d;
 #else
     return FALSE;
 #endif

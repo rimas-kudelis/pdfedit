@@ -43,7 +43,7 @@ static const char *app = 0;
 
 static void dumpMessages()
 {
-    qWarning( messages().join( "\n" ) );
+    qWarning( "%s", messages().join( "\n" ).ascii() );
 }
 
 static void dumpMessagesStdout()

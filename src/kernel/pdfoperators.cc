@@ -283,7 +283,7 @@ TextSimpleOperator::setFontText (const std::string& str)
 	}
 	else if (name == "TJ")
 	{
-		shared_ptr<IProperty> op = ops[0];
+		boost::shared_ptr<IProperty> op = ops[0];
 		if (!isArray(op) || ops.size() != 1)
 		{
 			utilsPrintDbg(debug::DBG_WARN, "Bad operands for TJ operator: ops[type="<< op->getType() <<" size="<<ops.size()<<"]");
@@ -294,10 +294,10 @@ TextSimpleOperator::setFontText (const std::string& str)
 		// formatting and add the given string as an only one
 		// parameter in the array.
 		if (isArray(op)) {
-			shared_ptr<CArray> array = IProperty::getSmartCObjectPtr<CArray>(op);
+			boost::shared_ptr<CArray> array = IProperty::getSmartCObjectPtr<CArray>(op);
 			while (array->getPropertyCount() > 1)
 				array->delProperty(array->getPropertyCount()-1);
-			shared_ptr<IProperty> p = array->getProperty(0);
+			boost::shared_ptr<IProperty> p = array->getProperty(0);
 			setValueToSimple<CString, pString>(p, codeStr);
 		}else
 			setValueToSimple<CString, pString>(ops[0], codeStr);

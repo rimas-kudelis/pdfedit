@@ -418,7 +418,7 @@ void PdfEditWindow::unsetObjectIf(TreeItemAbstract *theItem) {
   guiPrintDbg(debug::DBG_DBG,"Removed reference to deleted tree item");
   selectedTreeItem=NULL;
   //Unset from property editor
-  prop->setObject(NULL);
+  prop->setObject(QString::null);
   //Selection have probably just changed
   //base->call("onTreeSelectionChange");
  }

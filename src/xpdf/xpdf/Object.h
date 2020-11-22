@@ -206,17 +206,17 @@ public:
 private:
 
   ObjType type;			// object type
-  mutable union {		// value for each type:
-    GBool booln;		//   boolean
-    int intg;			//   integer
-    double real;		//   real
-    GString *string;		//   string
-    char *name;			//   name
-    Array *array;		//   array
-    Dict *dict;			//   dictionary
-    Stream *stream;		//   stream
-    Ref ref;			//   indirect reference
-    char *cmd;			//   command
+   union {			// value for each type:
+    mutable GBool booln;		//   boolean
+    mutable int intg;			//   integer
+    mutable double real;		//   real
+    mutable GString *string;		//   string
+    mutable char *name;			//   name
+    mutable Array *array;		//   array
+    mutable Dict *dict;			//   dictionary
+    mutable Stream *stream;		//   stream
+    mutable Ref ref;			//   indirect reference
+    mutable char *cmd;			//   command
   };
 
 #ifdef DEBUG_MEM

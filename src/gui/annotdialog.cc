@@ -309,7 +309,7 @@ using namespace boost;
         // creates CAnnotation instance with factory, this should
         // use TextAnnotInitializer with values which we have
         // set above
-        shared_ptr<CAnnotation> annotInstance=CAnnotation::createAnnotation(rect, "Text");
+        boost::shared_ptr<CAnnotation> annotInstance=CAnnotation::createAnnotation(rect, "Text");
         page.get()->addAnnotation(annotInstance);
 
 
@@ -342,7 +342,7 @@ using namespace boost;
         // creates CAnnotation instance with factory, this should
         // use LinkAnnotInitializer with values which we have
         // set above
-        shared_ptr<CAnnotation> annotInstance=CAnnotation::createAnnotation(rect, "Link");
+        boost::shared_ptr<CAnnotation> annotInstance=CAnnotation::createAnnotation(rect, "Link");
         page.get()->addAnnotation(annotInstance);
 
         // sets back default values

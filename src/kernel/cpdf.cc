@@ -2041,7 +2041,7 @@ using namespace utils;
 				// prevent from endless loops for cyclick referencies
 				// returned reference must be same as registered one 
 				refEntry->second = STATE_RESOLVING;
-				IndiRef addIndiRef=addProperty(followedIp, refEntry->first, container, followedIp);
+				IndiRef addIndiRef=addProperty(followedIp, refEntry->first, container, followedIp != NULL);
 				assert(addIndiRef==refEntry->first);
 				refEntry->second = STATE_RESOLVED;
 			}			

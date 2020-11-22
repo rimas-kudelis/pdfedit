@@ -616,7 +616,7 @@ QString Base::pdftoxml (const QString& inFile, QVariant pagenums, const QString&
 
 	// Save it
 	ofstream of;
-	of.open (outFile);
+	of.open (outFile.ascii());
 	of << XmlOutputBuilder::xml (out) << flush;
 	of.close();
 
