@@ -1733,15 +1733,15 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
 	  dumpString(file + tables[j].offset, tables[j].len,
 		     outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VheaTable) {
-	  if (length >= (int)sizeof(vheaTab)) {
+	  if (length > (int)sizeof(vheaTab)) {
 	    error(errSyntaxWarning, -1, "length bigger than vheaTab size");
-	    length = sizeof(vheaTab) - 1;
+	    length = sizeof(vheaTab);
 	  }
 	  dumpString(vheaTab, length, outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VmtxTable) {
-	  if (length >= vmtxTabLength) {
+	  if (length > vmtxTabLength) {
 	    error(errSyntaxWarning, -1, "length bigger than vmtxTab size");
-	    length = vmtxTabLength - 1;
+	    length = vmtxTabLength;
 	  }
 	  dumpString(vmtxTab, length, outputFunc, outputStream);
 	}
