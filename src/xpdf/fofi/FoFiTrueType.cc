@@ -401,7 +401,7 @@ Gushort *FoFiTrueType::getCIDToGIDMap(int *nCIDs) {
   int i;
 
   *nCIDs = 0;
-  if (!openTypeCFF) {
+  if (!openTypeCFF || !tables) {
     return NULL;
   }
   i = seekTable("CFF ");
@@ -487,7 +487,7 @@ void FoFiTrueType::convertToType1(char *psName, char **newEncoding,
   FoFiType1C *ff;
   int i;
 
-  if (!openTypeCFF) {
+  if (!openTypeCFF || !tables) {
     return;
   }
   i = seekTable("CFF ");
@@ -638,7 +638,7 @@ void FoFiTrueType::convertToCIDType0(const char *psName,
   FoFiType1C *ff;
   int i;
 
-  if (!openTypeCFF) {
+  if (!openTypeCFF || !tables) {
     return;
   }
   i = seekTable("CFF ");
@@ -742,7 +742,7 @@ void FoFiTrueType::convertToType0(const char *psName,
   FoFiType1C *ff;
   int i;
 
-  if (!openTypeCFF) {
+  if (!openTypeCFF || !tables) {
     return;
   }
   i = seekTable("CFF ");
