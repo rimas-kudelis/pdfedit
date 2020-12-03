@@ -1464,7 +1464,7 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
   GBool ok;
   Guint checksum;
   int nNewTables;
-  int length, pos, glyfPos, i, j, k;
+  int length, pos, glyfPos, i, j, k, vmtxTabLength;
   Guchar vheaTab[36] = {
     0, 1, 0, 0,			// table version number
     0, 0,			// ascent
@@ -1560,6 +1560,7 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
     }
   }
   vmtxTab = NULL; // make gcc happy
+  vmtxTabLength = 0;
   advance = 0; // make gcc happy
   if (needVerticalMetrics) {
     needVhea = seekTable("vhea") < 0;
@@ -1617,6 +1618,7 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
 	checksum = computeTableChecksum(vheaTab, length);
       } else if (needVerticalMetrics && i == t42VmtxTable) {
 	length = 4 + (nGlyphs - 1) * 4;
+	vmtxTabLength = length;
 	vmtxTab = (Guchar *)gmalloc(length);
 	vmtxTab[0] = advance / 256;
 	vmtxTab[1] = advance % 256;
@@ -1731,8 +1733,16 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
 	  dumpString(file + tables[j].offset, tables[j].len,
 		     outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VheaTable) {
+	  if (length >= (int)sizeof(vheaTab)) {
+	    error(errSyntaxWarning, -1, "length bigger than vheaTab size");
+	    length = sizeof(vheaTab) - 1;
+	  }
 	  dumpString(vheaTab, length, outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VmtxTable) {
+	  if (length >= vmtxTabLength) {
+	    error(errSyntaxWarning, -1, "length bigger than vmtxTab size");
+	    length = vmtxTabLength - 1;
+	  }
 	  dumpString(vmtxTab, length, outputFunc, outputStream);
 	}
       }
