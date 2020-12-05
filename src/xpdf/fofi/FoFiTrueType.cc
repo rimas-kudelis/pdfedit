@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <climits>
 #include "goo/gtypes.h"
 #include "goo/gmem.h"
 #include "goo/GString.h"
@@ -1734,13 +1735,13 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
 		     outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VheaTable) {
 	  if (length > (int)sizeof(vheaTab)) {
-	    error(errSyntaxWarning, -1, "length bigger than vheaTab size");
+	    //~ error(-1, "length bigger than vheaTab size");
 	    length = sizeof(vheaTab);
 	  }
 	  dumpString(vheaTab, length, outputFunc, outputStream);
 	} else if (needVerticalMetrics && i == t42VmtxTable) {
 	  if (length > vmtxTabLength) {
-	    error(errSyntaxWarning, -1, "length bigger than vmtxTab size");
+	    //~ error(-1, "length bigger than vmtxTab size");
 	    length = vmtxTabLength;
 	  }
 	  dumpString(vmtxTab, length, outputFunc, outputStream);
@@ -1828,10 +1829,19 @@ void FoFiTrueType::parse() {
     return;
   }
   if (topTag == ttcfTag) {
-    pos = getU32BE(12, &parsedOk);
-    if (!parsedOk) {
+    /* TTC font */
+    int dircount;
+    dircount = getU32BE(8, &parsedOk);
+    if (!parsedOk)
       return;
+    if (!dircount) {
+        parsedOk = false;
+        return;
     }
+
+    pos = getU32BE(12, &parsedOk);
+    if (!parsedOk)
+      return;
   } else {
     pos = 0;
   }
@@ -1850,30 +1860,30 @@ void FoFiTrueType::parse() {
   }
   tables = (TrueTypeTable *)gmallocn(nTables, sizeof(TrueTypeTable));
   pos += 12;
+  j = 0;
   for (i = 0; i < nTables; ++i) {
-    tables[i].tag = getU32BE(pos, &parsedOk);
-    tables[i].checksum = getU32BE(pos + 4, &parsedOk);
-    tables[i].offset = (int)getU32BE(pos + 8, &parsedOk);
-    tables[i].len = (int)getU32BE(pos + 12, &parsedOk);
-    if (tables[i].offset + tables[i].len < tables[i].offset ||
-	tables[i].offset + tables[i].len > len) {
-      parsedOk = gFalse;
+    tables[j].tag = getU32BE(pos, &parsedOk);
+    tables[j].checksum = getU32BE(pos + 4, &parsedOk);
+    tables[j].offset = (int)getU32BE(pos + 8, &parsedOk);
+    tables[j].len = (int)getU32BE(pos + 12, &parsedOk);
+    if ((tables[j].offset < 0) || (tables[j].len < 0) || (tables[j].offset < INT_MAX - tables[j].len) || (tables[j].len > INT_MAX - tables[j].offset)
+         || (tables[j].offset + tables[j].len >= tables[j].offset && tables[j].offset + tables[j].len <= len)) {
+      // ignore any bogus entries in the table directory
+      ++j;
     }
     pos += 16;
   }
-  if (!parsedOk) {
+  if (nTables != j) {
+    nTables = j;
+    tables = (TrueTypeTable *)greallocn_checkoverflow(tables, nTables, sizeof(TrueTypeTable));
+  }
+  if (!parsedOk || tables == nullptr) {
     return;
   }
 
   // check for tables that are required by both the TrueType spec and
   // the Type 42 spec
-  if (seekTable("head") < 0 ||
-      seekTable("hhea") < 0 ||
-      seekTable("maxp") < 0 ||
-      seekTable("hmtx") < 0 ||
-      (!openTypeCFF && seekTable("loca") < 0) ||
-      (!openTypeCFF && seekTable("glyf") < 0) ||
-      (openTypeCFF && seekTable("CFF ") < 0)) {
+  if (seekTable("head") < 0 || seekTable("hhea") < 0 || seekTable("maxp") < 0 || (!openTypeCFF && seekTable("loca") < 0) || (!openTypeCFF && seekTable("glyf") < 0) || (openTypeCFF && seekTable("CFF ") < 0)) {
     parsedOk = gFalse;
     return;
   }
@@ -1920,39 +1930,13 @@ void FoFiTrueType::parse() {
     return;
   }
 
-  // make sure the loca table is sane (correct length and entries are
-  // in bounds)
-  if (!openTypeCFF) {
-    i = seekTable("loca");
-    if (tables[i].len < 0) {
-      parsedOk = gFalse;
-      return;
-    }
-    if (tables[i].len < (nGlyphs + 1) * (locaFmt ? 4 : 2)) {
-      nGlyphs = tables[i].len / (locaFmt ? 4 : 2) - 1;
-    }
-    for (j = 0; j <= nGlyphs; ++j) {
-      if (locaFmt) {
-	pos = (int)getU32BE(tables[i].offset + j*4, &parsedOk);
-      } else {
-	pos = getU16BE(tables[i].offset + j*2, &parsedOk);
-      }
-      if (pos < 0 || pos > len) {
-	parsedOk = gFalse;
-      }
-    }
-    if (!parsedOk) {
-      return;
-    }
-  }
-
   // read the post table
   readPostTable();
 }
 
 void FoFiTrueType::readPostTable() {
   GString *name;
-  int tablePos, postFmt, stringIdx, stringPos;
+  int tablePos, postFmt, stringIdx, stringPos, savedStringIdx;
   GBool ok;
   int i, j, n, m;
 
@@ -1987,6 +1971,7 @@ void FoFiTrueType::readPostTable() {
 	nameToGID->removeInt(macGlyphNames[j]);
 	nameToGID->add(new GString(macGlyphNames[j]), i);
       } else {
+	savedStringIdx = stringIdx;
 	j -= 258;
 	if (j != stringIdx) {
 	  for (stringIdx = 0, stringPos = tablePos + 34 + 2*n;
@@ -1998,13 +1983,17 @@ void FoFiTrueType::readPostTable() {
 	}
 	m = getU8(stringPos, &ok);
 	if (!ok || !checkRegion(stringPos + 1, m)) {
-	  goto err;
+		stringIdx = savedStringIdx;
+		ok = gTrue;
+		nameToGID->removeInt(macGlyphNames[j]);
+		nameToGID->add(new GString(macGlyphNames[0]), i);
+	} else {
+		name = new GString((char *)&file[stringPos + 1], m);
+		nameToGID->removeInt(name);
+		nameToGID->add(name, i);
+		++stringIdx;
+		stringPos += 1 + m;
 	}
-	name = new GString((char *)&file[stringPos + 1], m);
-	nameToGID->removeInt(name);
-	nameToGID->add(name, i);
-	++stringIdx;
-	stringPos += 1 + m;
       }
     }
   } else if (postFmt == 0x00028000) {
