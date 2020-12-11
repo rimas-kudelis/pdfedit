@@ -378,6 +378,9 @@ void GHash::expand() {
 GHashBucket *GHash::find(const GString *key, int *h)const {
   GHashBucket *p;
 
+  if (!key)
+    return NULL;
+
   *h = hash(key);
   for (p = tab[*h]; p; p = p->next) {
     if (!p->key->cmp(key)) {
@@ -389,6 +392,9 @@ GHashBucket *GHash::find(const GString *key, int *h)const {
 
 GHashBucket *GHash::find(const char *key, int *h)const {
   GHashBucket *p;
+
+  if (!key)
+    return NULL;
 
   *h = hash(key);
   for (p = tab[*h]; p; p = p->next) {
