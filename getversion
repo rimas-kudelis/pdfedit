@@ -71,10 +71,10 @@ then
 	fi
 
 	# Uncommitted changes
-	if [ `git diff-index --name-only HEAD | wc -l` -gt 0 ]
-	then
-		PACKAGE_RELEASE="${PACKAGE_RELEASE}-dirty"
-	fi
+	#if [ `git diff-index --name-only HEAD | wc -l` -gt 0 ]
+	#then
+	#	PACKAGE_RELEASE="${PACKAGE_RELEASE}-dirty"
+	#fi
 else
 	echo "Eeeek neither a released archive nor a git tree" >&2
 	exit 1
