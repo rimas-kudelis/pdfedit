@@ -86,7 +86,7 @@ QString openFileDialog(QWidget* parent,const QString &caption/*=QString::null*/,
   fd.setFilter(filters);
  }
 #ifdef QT3
- fd.setShowHiddenFiles(TRUE);
+ //fd.setShowHiddenFiles(TRUE);
 #endif
  if (!caption.isNull()) fd.setCaption(caption);
  if (savePath.isNull()) {
@@ -162,7 +162,7 @@ QString saveFileDialog(QWidget* parent,const QString &oldname,bool askOverwrite/
   fd.setFilter(filters);
  }
 #ifdef QT3
- fd.setShowHiddenFiles(TRUE);
+ //fd.setShowHiddenFiles(TRUE);
 #endif
  if (!caption.isNull()) fd.setCaption(caption);
  if (savePath.isNull()) {
