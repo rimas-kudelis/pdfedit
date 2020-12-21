@@ -161,6 +161,11 @@ toolbars	= MainToolbar,PageToolbar,DrawToolbar,RevisionToolbar,OperatorToolbar,S
 
 init_focus	= pagespace
 
+# Bigger fonts for HiDPI
+font_con = Sans,11,-1,5,50,0,0,0,0,0
+font_main = Sans,12,-1,5,50,0,0,0,0,0
+font_status = Sans,11,-1,5,50,0,0,0,0,0
+
 [gui/PageSpace]
 #Settings affecting preview window
 ResizingZone	= 2
@@ -185,7 +190,11 @@ spl_cmd		= 81,74
 
 [icon]
 		  # Default icon theme
-theme/current	= hicolor
+#theme/current	= hicolor
+# Use Tango theme
+theme/current = Tango
+# Bigger icons for HiDPI
+theme/big = 1
 		  # Application icon
 app		= pdfedit_icon_32.png
 
